@@ -1,4 +1,5 @@
-﻿import type { Metadata } from "next";
+﻿
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import path from "node:path";
@@ -10,11 +11,16 @@ import {
   BookOpen,
   Clock3,
   ChevronRight,
+  CalendarDays,
+  History,
 } from "lucide-react";
+
 import { getGuideById, loadGuides } from "@preshipos/content";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { Reveal } from "@/components/animations/reveal";
+import { ShareButtons } from "@/components/share/share-buttons";
+import { getGitHubContentDates } from "@/lib/content-dates";
 import type { ReactNode } from "react";
 
 export const instant = false;
@@ -36,6 +42,15 @@ const moduleLabels: Record<string, string> = {
 
 function getContentRoot() {
   return path.resolve(process.cwd(), "..", "docs");
+}
+
+function formatCommitDate(value: string) {
+  return new Intl.DateTimeFormat("en", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(value));
 }
 
 function slugify(value: string) {
@@ -95,6 +110,7 @@ export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { id } = await params;
+
   const guide = await getGuideById(id, {
     contentRoot: getContentRoot(),
   });
@@ -114,17 +130,32 @@ export async function generateMetadata({
   };
 }
 
-export default async function GuideDetailPage({ params }: PageProps) {
+export default async function GuideDetailPage({
+  params,
+}: PageProps) {
   const { id } = await params;
 
   const [guide, guides] = await Promise.all([
-    getGuideById(id, { contentRoot: getContentRoot() }),
-    loadGuides({ contentRoot: getContentRoot() }),
+    getGuideById(id, {
+      contentRoot: getContentRoot(),
+    }),
+    loadGuides({
+      contentRoot: getContentRoot(),
+    }),
   ]);
 
   if (!guide) {
     notFound();
   }
+
+  // Retrieve publication and last-updated dates from GitHub history.
+  const repositoryRoot = path.resolve(process.cwd(), "..");
+
+  const contentPath = path
+    .relative(repositoryRoot, guide.path)
+    .replace(/\\/g, "/");
+
+  const contentDates = await getGitHubContentDates(contentPath);
 
   const currentIndex = guides.findIndex(
     (item) => item.metadata.id === guide.metadata.id,
@@ -147,23 +178,29 @@ export default async function GuideDetailPage({ params }: PageProps) {
 
       <main className="min-h-screen bg-background">
         <div className="mx-auto max-w-7xl px-5 pb-20 pt-8 sm:px-8 sm:pt-12">
-
           <Reveal>
             <nav
               aria-label="Breadcrumb"
               className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground"
             >
-              <Link href="/" className="transition-colors hover:text-primary">
+              <Link
+                href="/"
+                className="transition-colors hover:text-primary"
+              >
                 Home
               </Link>
+
               <ChevronRight size={13} />
+
               <Link
                 href="/guides"
                 className="transition-colors hover:text-primary"
               >
                 Guides
               </Link>
+
               <ChevronRight size={13} />
+
               <span className="font-medium text-foreground">
                 {moduleLabels[guide.metadata.module]}
               </span>
@@ -207,10 +244,44 @@ export default async function GuideDetailPage({ params }: PageProps) {
                   </span>
                 ))}
               </div>
+
+              {/* Publication dates and sharing controls */}
+              <div className="mt-8 flex flex-col gap-5 border-y border-border py-5">
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-xs text-muted-foreground">
+                  {contentDates ? (
+                    <>
+                      <span className="inline-flex items-center gap-2">
+                        <CalendarDays size={15} />
+                        Published{" "}
+                        {formatCommitDate(contentDates.publishedAt)}
+                      </span>
+
+                      {new Date(contentDates.updatedAt).getTime() >
+                        new Date(contentDates.publishedAt).getTime() && (
+                        <span className="inline-flex items-center gap-2">
+                          <History size={15} />
+                          Last updated{" "}
+                          {formatCommitDate(contentDates.updatedAt)}
+                        </span>
+                      )}
+                    </>
+                  ) : (
+                    <span className="inline-flex items-center gap-2">
+                      <CalendarDays size={15} />
+                      Publication date will appear after the guide is
+                      committed and pushed to GitHub.
+                    </span>
+                  )}
+                </div>
+
+                <ShareButtons
+                  title={guide.metadata.title}
+                  description={guide.metadata.description}
+                />
+              </div>
             </Reveal>
 
             <div className="mt-12 grid gap-10 lg:grid-cols-[minmax(0,1fr)_240px] lg:gap-14">
-
               <Reveal>
                 <article className="min-w-0">
                   <div
@@ -252,6 +323,7 @@ export default async function GuideDetailPage({ params }: PageProps) {
                             </h1>
                           );
                         },
+
                         h2: ({ children }) => {
                           const text = getHeadingText(children);
                           const headingId = createHeadingId(
@@ -265,6 +337,7 @@ export default async function GuideDetailPage({ params }: PageProps) {
                             </h2>
                           );
                         },
+
                         h3: ({ children }) => {
                           const text = getHeadingText(children);
                           const headingId = createHeadingId(
@@ -304,7 +377,9 @@ export default async function GuideDetailPage({ params }: PageProps) {
                           href={`#${heading.id}`}
                           className={[
                             "text-xs leading-5 text-muted-foreground transition-colors hover:text-primary",
-                            heading.level === 3 ? "pl-4" : "font-medium",
+                            heading.level === 3
+                              ? "pl-4"
+                              : "font-medium",
                           ].join(" ")}
                         >
                           {heading.text}
@@ -318,7 +393,6 @@ export default async function GuideDetailPage({ params }: PageProps) {
                   )}
                 </div>
               </aside>
-
             </div>
 
             <Reveal>
@@ -341,6 +415,7 @@ export default async function GuideDetailPage({ params }: PageProps) {
                         <span className="text-xs text-muted-foreground">
                           Previous guide
                         </span>
+
                         <span className="mt-2 flex items-center gap-2 text-sm font-semibold text-foreground group-hover:text-primary">
                           <ArrowLeft size={15} />
                           {previousGuide.metadata.title}
@@ -358,6 +433,7 @@ export default async function GuideDetailPage({ params }: PageProps) {
                         <span className="text-xs text-muted-foreground">
                           Next guide
                         </span>
+
                         <span className="mt-2 flex items-center justify-end gap-2 text-sm font-semibold text-foreground group-hover:text-primary">
                           {nextGuide.metadata.title}
                           <ArrowRight size={15} />

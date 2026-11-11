@@ -23,7 +23,9 @@ export function ShareButtons({
     ? `${title} — ${description}`
     : title;
 
-  const getUrl = () => window.location.href;
+  function getUrl() {
+    return window.location.href;
+  }
 
   async function copyLink() {
     try {
@@ -34,41 +36,45 @@ export function ShareButtons({
       textarea.value = getUrl();
       textarea.style.position = "fixed";
       textarea.style.opacity = "0";
+
       document.body.appendChild(textarea);
       textarea.select();
 
       const success = document.execCommand("copy");
       textarea.remove();
+
       setCopied(success);
     }
   }
 
+  function openShare(url: string) {
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
+
   async function nativeShare() {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title,
-          text: shareText,
-          url: getUrl(),
-        });
-      } catch (error) {
-        if (error instanceof Error && error.name !== "AbortError") {
-          await copyLink();
-        }
-      }
-    } else {
+    if (!navigator.share) {
       await copyLink();
+      return;
+    }
+
+    try {
+      await navigator.share({
+        title,
+        text: shareText,
+        url: getUrl(),
+      });
+    } catch (error) {
+      if (error instanceof Error && error.name !== "AbortError") {
+        await copyLink();
+      }
     }
   }
 
-  const encodedUrl = encodeURIComponent(
-    typeof window !== "undefined" ? window.location.href : "",
-  );
-
-  const encodedText = encodeURIComponent(shareText);
-
   return (
-    <section aria-label="Share this resource" className="flex flex-col gap-4">
+    <section
+      aria-label="Share this resource"
+      className="flex flex-col gap-4"
+    >
       <div>
         <h2 className="text-sm font-semibold text-foreground">
           Share this guide
@@ -79,38 +85,47 @@ export function ShareButtons({
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <a
-          href={`https://wa.me/?text=${encodeURIComponent(`${shareText}\n${typeof window !== "undefined" ? window.location.href : ""}`)}`}
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          type="button"
+          onClick={() =>
+            openShare(
+              `https://wa.me/?text=${encodeURIComponent(`${shareText}\n${getUrl()}`)}`,
+            )
+          }
           aria-label="Share on WhatsApp"
           className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2.5 text-xs font-medium text-foreground transition-colors hover:border-primary/40 hover:bg-muted"
         >
           <MessageCircle size={15} />
           WhatsApp
-        </a>
+        </button>
 
-        <a
-          href={`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`}
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          type="button"
+          onClick={() =>
+            openShare(
+              `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(getUrl())}`,
+            )
+          }
           aria-label="Share on Facebook"
           className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2.5 text-xs font-medium text-foreground transition-colors hover:border-primary/40 hover:bg-muted"
         >
           <span className="font-bold">f</span>
           Facebook
-        </a>
+        </button>
 
-        <a
-          href={`https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedText}`}
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          type="button"
+          onClick={() =>
+            openShare(
+              `https://twitter.com/intent/tweet?url=${encodeURIComponent(getUrl())}&text=${encodeURIComponent(shareText)}`,
+            )
+          }
           aria-label="Share on X"
           className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2.5 text-xs font-medium text-foreground transition-colors hover:border-primary/40 hover:bg-muted"
         >
           <span className="font-semibold">𝕏</span>
           Share on X
-        </a>
+        </button>
 
         <button
           type="button"
