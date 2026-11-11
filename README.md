@@ -1,7 +1,5 @@
 ![PreShipOS — Build. Launch. Grow.](assets/wordmark.svg)
 
-# PreShipOS
-
 ### Build. Launch. Grow.
 
 **An open-source ecosystem for people who turn ideas into products.**
