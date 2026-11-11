@@ -1,4 +1,4 @@
-![PreShipOS — Build. Launch. Grow.](assets/wordmark.png)
+![PreShipOS — Build. Launch. Grow.](assets/wordmark.svg)
 
 # PreShipOS
 
