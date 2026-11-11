@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:preshipos:schema:launch-platform.schema.json",
+  "title": "PreShipOS Launch Platform",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "name",
+    "url",
+    "description",
+    "status",
+    "categories"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "submission_url": {
+      "type": ["string", "null"],
+      "format": "uri"
+    },
+    "description": {
+      "type": "string"
+    },
+    "status": {
+      "enum": ["draft", "published", "archived"]
+    },
+    "categories": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "pricing": {
+      "enum": ["free", "freemium", "paid", "unknown"]
+    },
+    "requirements": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "last_verified": {
+      "type": ["string", "null"],
+      "format": "date"
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uri"
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "@preshipos/schemas",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./guide.schema.json": "./guide.schema.json",
+    "./checklist.schema.json": "./checklist.schema.json",
+    "./launch-platform.schema.json": "./launch-platform.schema.json",
+    "./resource.schema.json": "./resource.schema.json"
+  }
+}
