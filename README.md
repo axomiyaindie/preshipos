@@ -1,4 +1,6 @@
-![PreShipOS — Build. Launch. Grow.](assets/wordmark.svg)
+<p align="center">
+  <img src="assets/wordmark.svg" alt="PreShipOS — Build. Launch. Grow." width="420">
+</p>
 
 ### Build. Launch. Grow.
 
