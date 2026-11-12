@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:preshipos:schema:resource.schema.json",
+  "title": "PreShipOS Resource",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "title",
+    "description",
+    "type",
+    "status",
+    "url"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "type": {
+      "enum": [
+        "tool",
+        "article",
+        "documentation",
+        "course",
+        "template",
+        "community",
+        "other"
+      ]
+    },
+    "status": {
+      "enum": ["draft", "published", "archived"]
+    },
+    "url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "topics": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

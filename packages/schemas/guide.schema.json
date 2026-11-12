@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:preshipos:schema:guide.schema.json",
+  "title": "PreShipOS Guide Metadata",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "title",
+    "description",
+    "module",
+    "content_type",
+    "status",
+    "difficulty",
+    "topics"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 5
+    },
+    "description": {
+      "type": "string",
+      "minLength": 20,
+      "maxLength": 300
+    },
+    "module": {
+      "enum": [
+        "validate",
+        "build",
+        "check",
+        "prepare",
+        "launch",
+        "distribute",
+        "discover",
+        "grow"
+      ]
+    },
+    "content_type": {
+      "enum": ["guide", "tutorial", "reference", "workflow"]
+    },
+    "status": {
+      "enum": ["draft", "published", "archived"]
+    },
+    "difficulty": {
+      "enum": ["beginner", "intermediate", "advanced"]
+    },
+    "topics": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "last_reviewed": {
+      "type": ["string", "null"],
+      "format": "date"
+    },
+    "estimated_minutes": {
+      "type": "integer",
+      "minimum": 1
+    }
+  }
+}

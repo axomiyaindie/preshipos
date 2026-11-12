@@ -1,0 +1,21 @@
+{
+  "name": "PreshipOS",
+  "short_name": "PreshipOS",
+  "description": "Build better. Ship confidently.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#111827",
+  "theme_color": "#7C3AED",
+  "icons": [
+    {
+      "src": "/branding/icons/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/branding/icons/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
